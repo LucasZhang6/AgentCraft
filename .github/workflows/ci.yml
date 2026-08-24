@@ -21,7 +21,20 @@ jobs:
         with:
           go-version: '1.27.0'
           cache-dependency-path: examples/paper-agent/go.sum
-      - run: go test ./examples/paper-agent/...
+      - name: Test Go packages
+        shell: bash
+        run: |
+          set +e
+          go test -v ./examples/paper-agent/... 2>&1 | tee go-test.log
+          status=${PIPESTATUS[0]}
+          if [[ $status -ne 0 ]]; then
+            message=$(tail -n 100 go-test.log)
+            message=${message//'%'/'%25'}
+            message=${message//$'\r'/'%0D'}
+            message=${message//$'\n'/'%0A'}
+            echo "::error title=Go tests failed on ${RUNNER_OS}::${message}"
+          fi
+          exit "$status"
       - shell: bash
         run: |
           mkdir -p dist/bin
