@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go-matrix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.2'
+          cache-dependency-path: examples/paper-agent/go.sum
+      - run: go test ./examples/paper-agent/...
+      - shell: bash
+        run: |
+          mkdir -p dist/bin
+          suffix=""; [[ "${{ runner.os }}" == "Windows" ]] && suffix=".exe"
+          go build -o "dist/bin/paper-agent${suffix}" ./examples/paper-agent/cmd/paper-agent
+          go build -o "dist/bin/paper-agent-server${suffix}" ./examples/paper-agent/cmd/paper-agent-server
+          go build -o "dist/bin/feishu-adapter${suffix}" ./examples/paper-agent/cmd/feishu-adapter
+
+  open-source-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.2'
+          cache-dependency-path: examples/paper-agent/go.sum
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm --prefix ai-agent-roadmap-site ci
+      - run: make open-source-check
+      - run: npx playwright install --with-deps chromium
+      - run: make browser-regression
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-regression
+          path: artifacts/browser

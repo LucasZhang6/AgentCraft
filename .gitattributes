@@ -1,0 +1,8 @@
+ai-agent-roadmap-site/assets/vendor/** linguist-vendored -whitespace
+docs/feishu-agent-papers-and-projects*.md linguist-generated -whitespace
+
+*.png binary
+*.bcmap binary
+*.pfb binary
+*.ttf binary
+*.wasm binary

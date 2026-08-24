@@ -1,0 +1,19 @@
+.DS_Store
+.playwright-mcp/
+.agent-data/
+node_modules/
+dist/
+coverage/
+artifacts/
+*.log
+.gocache/
+/examples/paper-agent/main
+
+ai-agent-roadmap-android/build/
+ai-agent-roadmap-android/dist/
+ai-agent-roadmap-android/src/main/assets/
+
+# Downloaded research papers are local caches, not redistributed repository assets.
+ai-agent-roadmap-site/assets/pdfs/*.pdf
+ai-agent-roadmap-site/assets/pdfs/*.part
+ai-agent-roadmap-site/assets/pdfs/download-report.json

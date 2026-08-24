@@ -1,0 +1,18 @@
+{
+  "name": "agentcraft-roadmap-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node tests/content-regression.mjs",
+    "test": "node tests/content-regression.mjs",
+    "papers:download": "node scripts/download-papers.mjs",
+    "papers:verify": "node scripts/verify-papers.mjs",
+    "pdfjs:sync": "node scripts/sync-pdfjs.mjs",
+    "postinstall": "node scripts/sync-pdfjs.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "5.1.91"
+  }
+}

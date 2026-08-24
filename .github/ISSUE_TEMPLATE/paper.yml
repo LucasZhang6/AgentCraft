@@ -1,0 +1,48 @@
+name: Add or correct a paper / 新增或修正论文
+description: Propose a paper review or factual correction / 提议论文解读或事实修正
+title: "[Paper] "
+labels: [paper]
+body:
+  - type: input
+    id: title
+    attributes:
+      label: Paper title / 论文标题
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Primary source / 一手来源
+      description: Paper, author project page, or official repository / 论文原文、作者项目页或官方代码仓库
+    validations:
+      required: true
+  - type: dropdown
+    id: module
+    attributes:
+      label: Topic / 所属模块
+      options:
+        - LLM Foundations / LLM 基础能力
+        - Agent Loop
+        - Memory
+        - Tool Use
+        - Planning
+        - Evaluation / Safety
+        - RL Optimization / RL 优化
+        - Personal Agent Engineering / 专属 Agent 工程化
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Inclusion value or correction / 收录价值或修正内容
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checklist / 提交前确认
+      options:
+        - label: I searched existing entries and found no duplicate / 我已搜索现有条目，确认没有重复
+          required: true
+        - label: I provided a verifiable primary source / 我提供的是可核验的一手来源
+          required: true

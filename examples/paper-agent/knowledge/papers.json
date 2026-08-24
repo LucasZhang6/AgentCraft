@@ -1,0 +1,50 @@
+[
+  {
+    "id": "attention",
+    "title": "Attention Is All You Need",
+    "module": "LLM 基础能力",
+    "keywords": ["transformer", "attention", "注意力", "上下文", "llm"],
+    "url": "https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html",
+    "problem": "循环神经网络按顺序处理 token，难以充分并行，长距离依赖也不容易稳定建模。",
+    "method": "Transformer 使用 self-attention 让序列中的每个位置直接聚合其他位置的信息，并用多头注意力学习不同关系、用位置编码保留顺序。",
+    "contribution": "它建立了现代大语言模型的主要骨架，也让长上下文中的指令、历史轨迹和工具结果可以被统一处理。",
+    "limitation": "标准注意力的计算和显存开销随序列长度平方增长；上下文变长并不代表模型一定能正确利用所有信息。",
+    "engineering": "把上下文当成有限预算，只注入当前决策真正需要的目标、观察和可信记忆，并持续记录 token 与延迟。"
+  },
+  {
+    "id": "toolformer",
+    "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+    "module": "Tool Use",
+    "keywords": ["tool", "tool use", "工具", "api", "调用"],
+    "url": "https://arxiv.org/abs/2302.04761",
+    "problem": "语言模型会在精确计算、时效知识和外部系统操作上失败，但简单暴露 API 并不能让它自动学会何时调用。",
+    "method": "论文用少量示例引导模型生成候选 API 调用，再根据调用结果是否降低语言建模损失筛选训练样本，让模型学习调用时机、参数和结果利用。",
+    "contribution": "它把工具调用描述为一种可学习的语言行为，连接了文本生成与外部能力。",
+    "limitation": "论文工具集合较小，调用格式和环境相对理想化，不能直接解决权限、错误恢复和复杂多步工具编排。",
+    "engineering": "为每个工具定义严格 schema、成本、权限、超时和错误类型，并评估每次调用是否真正改善任务结果。"
+  },
+  {
+    "id": "a-mem",
+    "title": "A-MEM: Agentic Memory for LLM Agents",
+    "module": "Memory",
+    "keywords": ["memory", "agent memory", "记忆", "长期记忆", "a-mem"],
+    "url": "https://arxiv.org/abs/2502.12110",
+    "problem": "把每轮对话不断追加到向量库，会产生重复、矛盾、过时和粒度混乱，检索质量会随着记忆增长而下降。",
+    "method": "A-MEM 借鉴卡片式知识管理，让新记忆生成结构化属性并与旧记忆建立链接，同时允许已有记忆根据新信息动态更新。",
+    "contribution": "它把 Agent Memory 从静态存储推进为会组织和演化的知识网络，强调记忆之间的关系与生命周期。",
+    "limitation": "动态整理本身需要额外模型调用和成本；错误更新可能扩散，长期运行时仍需要来源、冲突和删除机制。",
+    "engineering": "实现 ADD、UPDATE、MERGE、DELETE、RETRIEVE 五类操作，并为每条记忆保存来源、置信度、范围和用户确认状态。"
+  },
+  {
+    "id": "efficient-agents",
+    "title": "Toward Efficient Agents: A Survey of Memory, Tool Learning, and Planning",
+    "module": "Agent Loop",
+    "keywords": ["efficient", "效率", "agent loop", "planning", "memory", "tool"],
+    "url": "https://arxiv.org/abs/2601.14192",
+    "problem": "Agent 研究常只比较任务效果，却忽略长上下文、记忆读写、工具调用、规划搜索、重试和多 Agent 通信带来的系统成本。",
+    "method": "综述围绕 Memory、Tool Use 和 Planning 整理高效方法，并主张在固定效果下降低成本，或在固定预算下提高效果。",
+    "contribution": "它给出面向系统的效率视角，提醒开发者同时观察成功率、token、延迟、工具次数和规划步数。",
+    "limitation": "不同论文的任务、模型和成本口径差异很大，统一比较仍然困难；综述本身也不提供一套可直接部署的 Agent。",
+    "engineering": "从第一版开始保存完整轨迹和成本字段，以真实任务成功率为前提寻找 Pareto 更优的模型、工具和 workflow。"
+  }
+]

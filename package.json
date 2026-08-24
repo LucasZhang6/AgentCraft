@@ -1,0 +1,38 @@
+{
+  "name": "agentcraft",
+  "version": "0.1.0",
+  "description": "AgentCraft is an English-default bilingual research map and Go reference runtime for AI Agent systems.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npm --prefix ai-agent-roadmap-site run dev",
+    "build": "npm --prefix ai-agent-roadmap-site run build",
+    "test": "npm run docs:locales && npm --prefix ai-agent-roadmap-site test && npm run agent:test",
+    "docs:locales": "node scripts/check-doc-locales.mjs",
+    "agent:test": "GOCACHE=$PWD/.gocache go test ./examples/paper-agent/...",
+    "agent": "GOCACHE=$PWD/.gocache go run ./examples/paper-agent/cmd/paper-agent",
+    "papers:download": "npm --prefix ai-agent-roadmap-site run papers:download",
+    "papers:verify": "npm --prefix ai-agent-roadmap-site run papers:verify",
+    "android:sync": "node ai-agent-roadmap-android/scripts/sync-web-assets.mjs",
+    "android:build": "bash ai-agent-roadmap-android/scripts/build-apk.sh",
+    "e2e": "make e2e",
+    "browser:test": "make browser-regression",
+    "open-source-check": "make open-source-check",
+    "release:snapshot": "make release-snapshot"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  },
+  "keywords": [
+    "ai-agent",
+    "llm",
+    "agent-memory",
+    "tool-use",
+    "planning",
+    "agent-engineering"
+  ]
+}

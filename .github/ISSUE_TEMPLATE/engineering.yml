@@ -1,0 +1,34 @@
+name: Engineering proposal or issue / 工程建议或问题
+description: Propose an experiment or report a reproducible problem / 提议实验或报告可复现问题
+title: "[Engineering] "
+labels: [engineering]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or experiment objective / 问题或实验目标
+      description: Describe expected and actual behavior / 请说明预期行为和实际行为
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction steps / 复现步骤
+      placeholder: |
+        1. With Node.js ... / 使用 Node.js ...
+        2. Run ... / 运行 ...
+        3. Observe ... / 观察到 ...
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment / 环境
+      description: OS, Node.js/Go versions, and relevant configuration / 操作系统、Node.js/Go 版本和相关配置
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or additional context / 日志或补充信息
+      description: Remove keys, identities, and private data before pasting / 粘贴前请删除密钥、身份信息和私有数据
