@@ -9,9 +9,9 @@ artifacts/
 .gocache/
 /examples/paper-agent/main
 
-ai-agent-roadmap-android/build/
-ai-agent-roadmap-android/dist/
-ai-agent-roadmap-android/src/main/assets/
+# The Android wrapper is maintained locally and is intentionally excluded from
+# the open-source repository.
+ai-agent-roadmap-android/
 
 # Downloaded research papers are local caches, not redistributed repository assets.
 ai-agent-roadmap-site/assets/pdfs/*.pdf

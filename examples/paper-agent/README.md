@@ -369,8 +369,9 @@ registry checks authority; it proposes completion, but an evaluator accepts it.
 
 ## Verification
 
-The runtime requires Go 1.24.2, CGO, and a C compiler. SQLite uses
-`github.com/mattn/go-sqlite3`.
+The runtime requires Go 1.25 or newer. SQLite uses the pure-Go
+`modernc.org/sqlite` driver, so Windows builds do not require CGO or a C
+compiler.
 
 ```bash
 GOCACHE="$PWD/.gocache" go test ./...

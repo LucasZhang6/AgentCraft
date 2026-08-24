@@ -20,11 +20,12 @@
 - Agent 系统架构、实现里程碑和评估指标
 - 可直接运行的 Go Paper Agent Runtime
 - 论文研究图谱、飞书论文合集与 URL 索引
-- 交互式 Web 站点和 Android 离线封装
+- 交互式 Web 站点与本地论文阅读器
+- 跨平台构建、CodeQL、依赖审计、Trivy 全库扫描、SPDX SBOM 和签名发布流程
 
 ## 快速开始
 
-要求 Node.js 20 或更高版本，以及 Go 1.24.2 或更高版本。离线 Demo 不需要 API Key。首次运行先下载本地论文缓存：
+要求 Node.js 20 或更高版本，以及 Go 1.25 或更高版本。离线 Demo 不需要 API Key。首次运行先下载本地论文缓存：
 
 ```bash
 git clone git@github.com:LucasZhang6/AgentCraft.git
@@ -351,7 +352,6 @@ failure_reason
 ├── examples/paper-agent/        # Go Paper Agent runtime
 ├── docs/                        # 架构、能力图谱、工程路径与论文合集
 ├── assets/architecture/         # ImageGen 生成的架构与流程图
-├── ai-agent-roadmap-android/    # Android 离线封装与回归
 ├── agent_research_map_from_feishu_urls.md
 ├── feishu_agent_urls.md
 └── package.json
@@ -394,7 +394,7 @@ failure_reason
 - 可复现的 Agent 工程实验
 - Memory、Tool Use、Planning、Evaluation 或 Safety 实现
 - 真实任务、失败案例和评估方法
-- Web、Android、可访问性和文档改进
+- Web、可访问性和文档改进
 
 提交前请阅读 [CONTRIBUTING.zh-CN.md](CONTRIBUTING.zh-CN.md)。安全问题请按 [SECURITY.zh-CN.md](SECURITY.zh-CN.md) 私下报告，不要在公开 Issue 中披露可利用细节。
 

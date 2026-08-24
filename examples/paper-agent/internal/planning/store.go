@@ -7,14 +7,13 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/domain"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/sqliteutil"
 )
 
 type Plan struct {
@@ -40,8 +39,7 @@ func NewStore(path string) (*Store, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, err
 	}
-	dsn := (&url.URL{Scheme: "file", Path: path, RawQuery: "_busy_timeout=5000&_journal_mode=WAL"}).String()
-	database, err := sql.Open("sqlite3", dsn)
+	database, err := sqliteutil.Open(path, false)
 	if err != nil {
 		return nil, err
 	}

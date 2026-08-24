@@ -25,15 +25,15 @@ The repository currently includes:
 - a production-shaped Paper Agent runtime written in Go
 - CLI, TUI, Web UI, HTTP API, and Feishu entry points
 - persistent sessions, goals, plans, memory, metrics, and replayable traces
-- cross-platform builds, E2E tests, browser regression, and release checks
+- cross-platform builds, E2E and browser regression, CodeQL, dependency audits,
+  complete Trivy scans, SPDX SBOMs, and signed release checks
 
 ## Start Here
 
 Requirements:
 
 - Node.js 20 or newer
-- Go 1.24.2 or newer
-- CGO and a C compiler for SQLite
+- Go 1.25 or newer
 
 Download the local paper cache and start the research site:
 
@@ -266,7 +266,6 @@ browser behavior, release archives, and checksums.
 ├── examples/paper-agent/        # Go runtime, CLI, HTTP server, and adapters
 ├── docs/                        # architecture, engineering, roadmap, and corpus
 ├── assets/architecture/         # ImageGen architecture diagrams
-├── ai-agent-roadmap-android/    # offline Android WebView wrapper
 ├── agent_research_map_from_feishu_urls.md
 └── feishu_agent_urls.md
 ```

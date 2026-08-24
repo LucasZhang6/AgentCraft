@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/sqliteutil"
 )
 
 type Store struct {
@@ -33,7 +33,7 @@ func NewStore(path string) (*Store, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
 		return nil, err
 	}
-	db, err := sql.Open("sqlite3", path+"?_journal_mode=WAL&_foreign_keys=on&_busy_timeout=5000")
+	db, err := sqliteutil.Open(path, true)
 	if err != nil {
 		return nil, err
 	}

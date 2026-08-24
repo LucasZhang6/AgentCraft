@@ -8,13 +8,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/sqliteutil"
 )
 
 type State string
@@ -73,8 +72,7 @@ func NewStore(path string) (*Store, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, err
 	}
-	dsn := (&url.URL{Scheme: "file", Path: path, RawQuery: "_busy_timeout=5000&_journal_mode=WAL&_foreign_keys=on"}).String()
-	database, err := sql.Open("sqlite3", dsn)
+	database, err := sqliteutil.Open(path, true)
 	if err != nil {
 		return nil, err
 	}

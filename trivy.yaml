@@ -1,0 +1,11 @@
+scan:
+  skip-dirs:
+    - .git
+    - .gocache
+    - .agent-data
+    - artifacts
+    - dist
+    - node_modules
+    - ai-agent-roadmap-site/node_modules
+    - ai-agent-roadmap-site/assets/pdfs
+    - ai-agent-roadmap-android

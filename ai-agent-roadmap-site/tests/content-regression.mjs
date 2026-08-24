@@ -1,4 +1,4 @@
-import { open, readFile, stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { architecture, metrics, modules as modulesZh } from "../src/data.js";
 import { architecture as architectureEn, metrics as metricsEn, modules as modulesEn } from "../src/data.en.js";
 import { DEFAULT_LOCALE, resolveLocale, ui } from "../src/i18n.js";
@@ -157,21 +157,25 @@ for (let index = 1; index <= totalPapers; index++) {
   }
 }
 
-for (const paper of downloadablePaperAssets) {
-  try {
-    const pdfUrl = new URL(`../assets/pdfs/${paper.file}`, import.meta.url);
-    const info = await stat(pdfUrl);
-    const handle = await open(pdfUrl, "r");
-    const header = Buffer.alloc(5);
+const verifyLocalPdfs = process.env.REQUIRE_LOCAL_PDFS === "1";
+if (verifyLocalPdfs) {
+  const { open } = await import("node:fs/promises");
+  for (const paper of downloadablePaperAssets) {
     try {
-      await handle.read(header, 0, header.length, 0);
-    } finally {
-      await handle.close();
+      const pdfUrl = new URL(`../assets/pdfs/${paper.file}`, import.meta.url);
+      const info = await stat(pdfUrl);
+      const handle = await open(pdfUrl, "r");
+      const header = Buffer.alloc(5);
+      try {
+        await handle.read(header, 0, header.length, 0);
+      } finally {
+        await handle.close();
+      }
+      assert(info.size > 10_000, `${paper.file} should be a non-empty local PDF`);
+      assert(header.toString("ascii") === "%PDF-", `${paper.file} should have a valid PDF header`);
+    } catch {
+      assert(false, `${paper.file} is missing; run npm run papers:download`);
     }
-    assert(info.size > 10_000, `${paper.file} should be a non-empty local PDF`);
-    assert(header.toString("ascii") === "%PDF-", `${paper.file} should have a valid PDF header`);
-  } catch {
-    assert(false, `${paper.file} is missing; run npm run papers:download`);
   }
 }
 
@@ -196,5 +200,5 @@ if (failures.length) {
 }
 
 console.log(
-  `Regression check passed: ${modules.length} modules, ${totalPapers} bilingual papers, ${totalPapers} images, ${downloadablePaperAssets.length} local PDFs, ${practiceProject.phases.length} implementation layers.`
+  `Regression check passed: ${modules.length} modules, ${totalPapers} bilingual papers, ${totalPapers} images, ${downloadablePaperAssets.length} ${verifyLocalPdfs ? "verified local PDFs" : "local PDF definitions"}, ${practiceProject.phases.length} implementation layers.`
 );

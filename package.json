@@ -17,8 +17,6 @@
     "agent": "GOCACHE=$PWD/.gocache go run ./examples/paper-agent/cmd/paper-agent",
     "papers:download": "npm --prefix ai-agent-roadmap-site run papers:download",
     "papers:verify": "npm --prefix ai-agent-roadmap-site run papers:verify",
-    "android:sync": "node ai-agent-roadmap-android/scripts/sync-web-assets.mjs",
-    "android:build": "bash ai-agent-roadmap-android/scripts/build-apk.sh",
     "e2e": "make e2e",
     "browser:test": "make browser-regression",
     "open-source-check": "make open-source-check",

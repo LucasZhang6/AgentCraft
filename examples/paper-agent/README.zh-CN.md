@@ -245,7 +245,7 @@ CLI 会在任务结束时输出这些核心指标。Token 指标依赖 Provider 
 
 ## 验证
 
-需要 Go 1.24.2、CGO 和可用的 C 编译器。SQLite 驱动为 `github.com/mattn/go-sqlite3`。
+需要 Go 1.25 或更高版本。SQLite 使用纯 Go 的 `modernc.org/sqlite` 驱动，Windows 构建不再需要 CGO 或 C 编译器。
 
 ```bash
 GOCACHE="$PWD/.gocache" go test ./...

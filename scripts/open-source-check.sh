@@ -11,6 +11,10 @@ if rg -n --hidden --glob '!node_modules/**' --glob '!dist/**' --glob '!.git/**' 
   echo "possible secret found" >&2
   exit 1
 fi
+if rg -n --pcre2 'uses:\s+[^\s]+@(?![0-9a-f]{40}(?:\s|$))[^\s#]+' .github/workflows; then
+  echo "GitHub Actions must be pinned to full commit SHAs" >&2
+  exit 1
+fi
 unformatted="$(gofmt -l examples/paper-agent)"
 test -z "$unformatted" || { echo "gofmt required:" >&2; echo "$unformatted" >&2; exit 1; }
 GOCACHE="$ROOT/.gocache" go vet ./examples/paper-agent/...

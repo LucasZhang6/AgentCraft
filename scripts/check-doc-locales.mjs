@@ -10,7 +10,6 @@ const pairs = [
   ["SECURITY.md", "SECURITY.zh-CN.md"],
   ["agent_research_map_from_feishu_urls.md", "agent_research_map_from_feishu_urls.zh-CN.md"],
   ["feishu_agent_urls.md", "feishu_agent_urls.zh-CN.md"],
-  ["ai-agent-roadmap-android/README.md", "ai-agent-roadmap-android/README.zh-CN.md"],
   ["ai-agent-roadmap-site/assets/pdfs/README.md", "ai-agent-roadmap-site/assets/pdfs/README.zh-CN.md"],
   ["assets/architecture/README.md", "assets/architecture/README.zh-CN.md"],
   ["docs/architecture.md", "docs/architecture.zh-CN.md"],
@@ -64,8 +63,7 @@ async function walk(relative = "") {
   for (const entry of entries) {
     const child = path.join(relative, entry.name).split(path.sep).join("/");
     if (entry.isDirectory()) {
-      if ([".git", ".gocache", ".agent-data", "dist", "node_modules"].includes(entry.name)) continue;
-      if (child === "ai-agent-roadmap-android/src/main/assets") continue;
+      if ([".git", ".gocache", ".agent-data", "dist", "node_modules", "ai-agent-roadmap-android"].includes(entry.name)) continue;
       result.push(...(await walk(child)));
     } else if (entry.isFile() && entry.name.endsWith(".md")) {
       result.push(child);

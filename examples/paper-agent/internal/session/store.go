@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -18,7 +17,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/domain"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/sqliteutil"
 )
 
 const (
@@ -135,8 +134,7 @@ func NewStore(path string, config Config) (*Store, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		return nil, fmt.Errorf("create session directory: %w", err)
 	}
-	dsn := (&url.URL{Scheme: "file", Path: path, RawQuery: "_busy_timeout=5000&_journal_mode=WAL&_foreign_keys=on"}).String()
-	database, err := sql.Open("sqlite3", dsn)
+	database, err := sqliteutil.Open(path, true)
 	if err != nil {
 		return nil, fmt.Errorf("open session database: %w", err)
 	}

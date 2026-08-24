@@ -15,6 +15,16 @@ files or versions, reproduction conditions, likely impact, and a suggested
 mitigation when possible. Maintainers will coordinate disclosure after
 confirming the report.
 
+## Automated Checks
+
+Every push and pull request runs CodeQL for Go and JavaScript, `govulncheck`,
+both npm audits, and a Trivy filesystem scan covering vulnerabilities, secrets,
+and configuration errors. The scheduled scan clears Trivy's local cache and
+downloads the current complete vulnerability database before analysis. Each
+security run publishes SARIF plus an SPDX JSON SBOM; tagged releases include a
+checksummed and keyless-signed SBOM. All third-party GitHub Actions are pinned
+to immutable commit SHAs and Dependabot proposes reviewed updates.
+
 ## Runtime Boundaries
 
 - API keys are read from environment variables and must not be committed,

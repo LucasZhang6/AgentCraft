@@ -2,7 +2,6 @@ package session_test
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/session"
+	"github.com/LucasZhang6/AgentCraft/examples/paper-agent/internal/sqliteutil"
 )
 
 type fakeSummarizer struct {
@@ -207,7 +207,7 @@ func TestSessionListSaveAndFork(t *testing.T) {
 
 func TestSessionStoreMigratesExistingDatabase(t *testing.T) {
 	path := t.TempDir() + "/sessions.db"
-	database, err := sql.Open("sqlite3", path)
+	database, err := sqliteutil.Open(path, false)
 	if err != nil {
 		t.Fatalf("open legacy db: %v", err)
 	}
