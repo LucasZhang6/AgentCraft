@@ -2,8 +2,7 @@ package sqliteutil
 
 import (
 	"database/sql"
-	"net/url"
-	"path/filepath"
+	"fmt"
 
 	_ "modernc.org/sqlite"
 )
@@ -11,16 +10,20 @@ import (
 const DriverName = "sqlite"
 
 func Open(path string, foreignKeys bool) (*sql.DB, error) {
-	query := url.Values{}
-	query.Add("_pragma", "busy_timeout(5000)")
-	query.Add("_pragma", "journal_mode(WAL)")
-	if foreignKeys {
-		query.Add("_pragma", "foreign_keys(1)")
+	database, err := sql.Open(DriverName, path)
+	if err != nil {
+		return nil, err
 	}
-	dsn := (&url.URL{
-		Scheme:   "file",
-		Path:     filepath.ToSlash(path),
-		RawQuery: query.Encode(),
-	}).String()
-	return sql.Open(DriverName, dsn)
+	database.SetMaxOpenConns(1)
+	pragmas := []string{"PRAGMA busy_timeout=5000", "PRAGMA journal_mode=WAL"}
+	if foreignKeys {
+		pragmas = append(pragmas, "PRAGMA foreign_keys=ON")
+	}
+	for _, pragma := range pragmas {
+		if _, err := database.Exec(pragma); err != nil {
+			database.Close()
+			return nil, fmt.Errorf("configure sqlite: %w", err)
+		}
+	}
+	return database, nil
 }
