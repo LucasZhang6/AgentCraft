@@ -66,8 +66,22 @@ jobs:
       - name: Audit Go call paths
         working-directory: examples/paper-agent
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
-          govulncheck ./...
+          mkdir -p ../../artifacts/security
+          set +e
+          (
+            set -e
+            go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+            govulncheck ./...
+          ) 2>&1 | tee ../../artifacts/security/govulncheck.log
+          status=${PIPESTATUS[0]}
+          if [[ $status -ne 0 ]]; then
+            message=$(tail -n 100 ../../artifacts/security/govulncheck.log)
+            message=${message//'%'/'%25'}
+            message=${message//$'\r'/'%0D'}
+            message=${message//$'\n'/'%0A'}
+            echo "::error title=govulncheck failed::${message}"
+          fi
+          exit "$status"
       - name: Audit JavaScript dependencies
         run: |
           npm audit --audit-level=high
@@ -92,7 +106,7 @@ jobs:
         with:
           sarif_file: artifacts/security/trivy.sarif
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: always()
+        if: always() && hashFiles('artifacts/security/**') != ''
         with:
           name: security-reports
           path: artifacts/security
