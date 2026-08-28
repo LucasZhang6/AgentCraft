@@ -70,7 +70,7 @@ jobs:
           set +e
           (
             set -e
-            go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+            go install golang.org/x/vuln/cmd/govulncheck@v1.7.0
             govulncheck ./...
           ) 2>&1 | tee ../../artifacts/security/govulncheck.log
           status=${PIPESTATUS[0]}
