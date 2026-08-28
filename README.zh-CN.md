@@ -2,7 +2,9 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-连接 **AI Agent 理论、关键论文与工程实现** 从0实现一个AI Agent。
+连接 **AI Agent 理论、关键论文与工程实现**，从 0 构建一个属于自己的 AI Agent。
+
+参考运行时命名为 **Your Agent**，寓意它不是固定用途的成品机器人，而是由用户掌握模型、Prompt、工具、权限、记忆、计划、评估和交互入口的高度自定义 Agent 助手。仓库当前以“论文研究助手”作为可运行、可回归的默认配置，底层 Runtime 边界保持通用，可逐步替换成个人知识、开发、运维或其他专属场景。
 
 本项目试图回答三个问题：
 
@@ -18,7 +20,7 @@
 
 - 8 个 Agent 核心主题与 31 篇代表性论文的概要、详解和本地原文
 - Agent 系统架构、实现里程碑和评估指标
-- 可直接运行的 Go Paper Agent Runtime
+- 可直接运行的 Go 版 Your Agent Runtime
 - 论文研究图谱、飞书论文合集与 URL 索引
 - 交互式 Web 站点与本地论文阅读器
 - 跨平台构建、CodeQL、依赖审计、Trivy 全库扫描、SPDX SBOM 和签名发布流程
@@ -53,7 +55,7 @@ make build
 
 二进制输出到 `dist/bin/`。
 
-运行 Paper Agent Runtime：
+运行 Your Agent Runtime：
 
 ```bash
 npm run agent -- "解读一篇关于 Agent Memory 的论文"
@@ -61,7 +63,7 @@ npm run agent -- "解读一篇关于 Agent Memory 的论文"
 
 该命令会执行完整 Agent Loop，并在 `.agent-data/` 中记录结构化消息、工具调用与结果、计划步骤、Goal、指标、记忆和轨迹。真实 Provider 还支持流式输出、模型回退和 Prompt Cache 统计。
 
-持久 readline 模式使用 `dist/bin/paper-agent -interactive`，全屏终端使用 `-tui`；运行 `dist/bin/paper-agent-server` 后可直接打开 `http://127.0.0.1:18080/`。飞书接入和服务端配置见 [飞书适配器](docs/feishu-adapter.zh-CN.md)。
+持久 readline 模式使用 `dist/bin/your-agent -interactive`，全屏终端使用 `-tui`；运行 `dist/bin/your-agent-server` 后可直接打开 `http://127.0.0.1:18080/`。飞书接入和服务端配置见 [飞书适配器](docs/feishu-adapter.zh-CN.md)。
 
 ## Agent 的系统模型
 
@@ -193,7 +195,7 @@ Markdown 镜像保留飞书接口返回的完整正文和原始换行，方便�
 | 阶段 | 需要实现 | 验收条件 |
 | --- | --- | --- |
 | 1. 定义场景 | 明确用户、输入、输出、环境和高风险动作 | 能写出 20 个固定真实任务，不用“智能”描述目标 |
-| 2. Agent Loop | Controller、状态、最大步数、时间与成本预算 | 每轮决策可记录，网络或工具失败后能安全停止 |
+| 2. Agent Loop | Scheduler、原生 Tool Calling、状态、最大步数、时间与成本预算 | 每轮调用可记录，网络或工具失败后能安全停止 |
 | 3. Tool Layer | Tool Registry、schema、权限、超时、重试、审计 | 未注册工具和非法参数默认拒绝，写操作可确认 |
 | 4. Memory | 短期状态、用户事实、任务经验、来源与删除 | 能解释每条记忆从哪里来、为何写入、何时失效 |
 | 5. Planning | 结构化步骤、依赖、风险、完成条件和重规划 | 中断后可恢复，步骤完成由证据而不是模型自报决定 |
@@ -244,8 +246,8 @@ evaluation:
 
 | 理论模块 | 代码中的主要接口 | 运行时应保存的数据 | 最小验证方式 |
 | --- | --- | --- | --- |
-| LLM 基础能力 | `ModelProvider.generate(decisionContext)` | 模型、提示版本、输入摘要、token、延迟 | 固定任务在不同模型和提示版本间可回归比较 |
-| Agent Loop | `Controller.run(goal, state)` | 当前步骤、剩余预算、动作、观察、停止原因 | 工具连续失败或预算耗尽时不会无限循环 |
+| LLM 基础能力 | `ModelProvider.generate(stepContext, tools)` | 模型、提示版本、输入摘要、token、延迟 | 固定任务在不同模型和提示版本间可回归比较 |
+| Agent Loop | `Scheduler.RunReady`、`Model.RunStep` | ready 步骤、call ID、动作、观察、停止原因 | 工具连续失败或预算耗尽时不会无限循环 |
 | Memory | `remember`、`retrieve`、`update`、`forget` | 内容、来源、作用域、置信度、时间和版本 | 错误记忆可追溯、修正、过期和删除 |
 | Tool Use | `ToolRegistry.execute(name, args, context)` | 工具名、参数、权限判断、结果、错误和耗时 | 未注册工具、非法参数和越权写入均被拒绝 |
 | Planning | `Model.CreatePlan`、`Replan` | 步骤、依赖、状态、预算、风险和验收条件 | 中断恢复后不会重复已完成的不可逆动作 |
@@ -253,19 +255,18 @@ evaluation:
 | Safety | `PolicyEngine.authorize(action)` | 策略版本、风险等级、确认人和拒绝原因 | 高风险动作无法绕过宿主程序直接执行 |
 | Skills / RL | `TrajectoryStore`、`SkillRegistry` | 完整轨迹、奖励、偏好对、技能版本 | 新策略只有通过离线任务集才进入默认路径 |
 
-模块之间建议使用显式的动作契约，而不是传递无法校验的自然语言。例如 Controller 每轮只接受以下决策之一：
+模块之间仍应使用显式契约，但动作不必再包装成模型输出的 JSON Controller。Your Agent 把工具 schema 直接交给 Provider，模型返回原生 function call：
 
 ```json
 {
-  "type": "tool_call",
-  "tool": "search_papers",
-  "arguments": { "query": "agent memory" },
-  "reason": "需要补充一手来源",
-  "expected_observation": "包含论文元数据和可访问链接"
+  "type": "function_call",
+  "call_id": "call_42",
+  "name": "search_papers",
+  "arguments": { "query": "agent memory" }
 }
 ```
 
-宿主程序先校验 `type`、工具白名单、参数 schema、权限和预算，再决定是否执行。工具结果以 Observation 返回下一轮，而不是让模型假定动作已经成功。这条边界使模型可以灵活推理，同时让真实世界的副作用仍由确定性代码控制。
+宿主程序先校验计划步骤、工具白名单、参数 schema、权限和预算，再决定是否执行。工具结果携带相同 `call_id` 作为原生 tool result 返回模型，而不是让模型假定动作已经成功。计划本身仍由模型生成结构化 JSON，但必须通过 DAG 校验后写入 SQLite；动作协议则使用 Provider 原生 Tool Calling。
 
 ### 工程完成标准
 
@@ -282,9 +283,9 @@ evaluation:
 
 ### 第一个专属 Agent 应该做什么
 
-本仓库选择 **Paper Agent** 作为参考实现，因为它能在可控范围内覆盖 Agent 的主要模块：
+本仓库选择 **Your Agent** 作为参考实现，因为它能在可控范围内覆盖 Agent 的主要模块：
 
-![Paper Agent 从论文输入、工具解析、结构化分析到记忆和技能沉淀的处理流水线](assets/architecture/paper-agent-pipeline.png)
+![Your Agent 从论文输入、工具解析、结构化分析到记忆和技能沉淀的处理流水线](assets/architecture/your-agent-pipeline.png)
 
 你可以把相同结构替换成自己的领域：
 
@@ -294,34 +295,42 @@ evaluation:
 - 企业知识 Agent：权限检索、业务流程、引用和审计
 - GUI Agent：截图感知、动作空间、环境状态和真实成功判定
 
-领域变化时，Controller 的闭环通常不变；主要替换的是工具、记忆 schema、策略规则和评估任务。
+领域变化时，Scheduler 与原生 ReAct 闭环通常不变；主要替换的是工具、记忆 schema、策略规则和评估任务。
 
-## Paper Agent Runtime
+## Your Agent Runtime
 
-`examples/paper-agent/` 使用 Go 实现一个可离线回归、也可连接真实模型的参考 runtime。`context.Context` 负责取消传播，接口隔离 Provider、模型、计划、工具、记忆、Session、评估和日志，论文目录通过 `embed` 编译进二进制：
+`examples/your-agent/` 使用 Go 实现一个可离线回归、也可连接真实模型的参考 runtime。`context.Context` 负责取消传播，接口隔离 Provider、模型、计划、工具、记忆、Session、评估和日志，论文目录通过 `embed` 编译进二进制：
 
 ![Minimal Agent Loop 从目标、计划和工具行动到评估、记忆与停止的运行闭环](assets/architecture/minimal-agent-loop.png)
 
 | 文件 | 职责 |
 | --- | --- |
-| `cmd/paper-agent/main.go` | 一次性/交互 CLI、持久 Session、审批与终端 UI |
-| `cmd/paper-agent-server/main.go` | 异步任务、取消、审批与 Session HTTP API |
+| `cmd/your-agent/main.go` | 一次性/交互 CLI、持久 Session、审批与终端 UI |
+| `cmd/your-agent-server/main.go` | 有界异步队列、取消、审批、可恢复 SSE 与 Session HTTP API |
 | `cmd/feishu-adapter/main.go` | 飞书消息、引用、图片和审批卡片入口 |
-| `internal/agent/agent.go` | ReAct、Goal continuation、上下文压缩与停止条件 |
-| `internal/session/` | 完整历史持久化、L1 微压缩、L2 digest、L3 异步摘要预热与上下文超限恢复 |
-| `internal/provider/openai.go` | OpenAI-compatible Responses Provider、重试与 usage |
-| `internal/model/` | 离线 Demo 与真实模型 Planner/Controller |
-| `internal/planning/validator.go` | 计划 schema、依赖图和工具引用校验 |
-| `internal/tools/` | 风险等级、白名单、审批、超时、输出预算与论文工具 |
+| `internal/agent/agent.go` | Scheduler 主执行链、Provider 原生 ReAct、Goal continuation、上下文压缩与停止条件 |
+| `internal/session/` | canonical turn/event、原生 reasoning/tool blocks、整轮事务、结构化恢复与 L0/L1/L2/L3 压缩 |
+| `internal/provider/openai.go` | OpenAI-compatible Responses Provider、流中断恢复、重试与 usage |
+| `internal/model/` | 离线 Demo、真实模型 Planner 与原生步骤执行 |
+| `internal/planning/validator.go` | 计划 schema、依赖图和每步骤受控工具集合校验 |
+| `internal/tools/` | 风险等级、白名单、审批、超时、输出预算、语义代码搜索与论文工具 |
+| `internal/verification/` | 物质性修改后的宿主 Verification Gate |
+| `internal/skills/` | 仓库、项目和用户级 Markdown Skills |
+| `internal/subagent/` | 子 Agent ID、父子关系、独立工具化 Runtime、超时、取消和 SQLite 生命周期 |
 | `internal/memory/store.go` | SQLite scope、来源、状态、置信度与预算检索 |
 | `internal/metrics/store.go` | 跨运行指标与累计任务成功率 |
 | `internal/evaluator/report.go` | 基于验收条件的确定性评估 |
 | `internal/trajectory/logger.go` | 可脱敏的 JSONL 轨迹与运行指标 |
+| `internal/server/` | 有界并发队列、Session/Task API、可恢复 SSE、任务恢复、文件工作台与 WebSocket PTY |
 | `internal/app/factory.go` | 运行时装配、内置目录与 Run ID |
 
-默认使用确定性的 `DemoModel`，这样工具、记忆、评估和停止行为可以离线回归。设置 `OPENAI_API_KEY`、`OPENAI_MODEL` 和 `-provider openai` 后可连接 OpenAI 或兼容 Responses API 的网关。真实模型生成计划和行动，程序仍负责 DAG、schema、权限、超时、Evaluator 和成本边界。Session 全量历史留在 SQLite；送模视图采用 L1 微压缩、L2 确定性 digest 与 75% 水位异步预热的 L3 模型摘要，Provider 报 context-length 错误时还会进行两级恢复重试。
+默认使用确定性的 `DemoModel`，这样工具、记忆、评估和停止行为可以离线回归。设置 `OPENAI_API_KEY`、`OPENAI_MODEL` 和 `-provider openai` 后可连接 OpenAI 或兼容 Responses API 的网关。真实模型生成计划和行动，程序仍负责 DAG、schema、权限、超时、Evaluator 和成本边界。Session 将 user、assistant reasoning、tool call/result、最终回答、状态和指标作为一个 turn 事务化提交；恢复后把 reasoning raw/encrypted 状态与 tool-call ID 作为原生结构交回 Provider，而不是重放文本。全量 blocks 留在 SQLite，送模视图采用 L1 微压缩、L2 确定性 digest 与 75% 水位异步预热的 L3 模型摘要，Provider 报 context-length 错误时还会进行两级恢复重试。
 
-完整说明见 [Paper Agent Runtime](examples/paper-agent/README.zh-CN.md) 和 [参考实现演进](docs/engineering-practice.zh-CN.md)。
+Provider 通过原生 function call 与稳定 call ID 提议动作，宿主按每步骤 `allowedTools` 集合校验工具、参数、权限、审批、超时和输出预算，再回送匹配的原生 tool result。上游 SSE 仅在没有输出任何语义事件时恢复，已有部分输出后安全失败，避免动作重放。发生文件写入或编辑后，宿主 Verification Gate 会阻止未经测试、构建、Lint 或等价命令验证的计划直接完成。Skills 从仓库、项目或用户目录加载；语义代码搜索使用有文件数和大小上限的本地符号/词法索引，不上传源码，也不伪装成向量检索。
+
+Web 服务通过有界 Worker Queue 执行写入 `tasks.db` 的异步任务，不同 Session 可并发，同一 Session 严格串行；SSE 使用事件 ID 和游标续流，重启后未完成任务会转为 `interrupted`。子 Agent 在 `subagents.db` 中保存父 Session/Run、状态、超时、结果和错误，每个子 Agent 还拥有独立的原生消息历史与受控工具 ReAct Runtime。浏览器可管理 Session 与结构化消息/事件、浏览和保存工作区文件，并通过同源校验的 WebSocket PTY 操作真实终端。
+
+完整说明见 [Your Agent Runtime](examples/your-agent/README.zh-CN.md) 和 [参考实现演进](docs/engineering-practice.zh-CN.md)。
 
 ## 评估指标
 
@@ -349,7 +358,7 @@ failure_reason
 ```text
 .
 ├── ai-agent-roadmap-site/       # 交互式研究图谱与论文分析
-├── examples/paper-agent/        # Go Paper Agent runtime
+├── examples/your-agent/        # Go Your Agent runtime
 ├── docs/                        # 架构、能力图谱、工程路径与论文合集
 ├── assets/architecture/         # ImageGen 生成的架构与流程图
 ├── agent_research_map_from_feishu_urls.md

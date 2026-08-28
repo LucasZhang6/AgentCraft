@@ -10,8 +10,8 @@ repository, so the project does not depend on temporary or external image URLs.
 | --- | --- | --- |
 | `agent-capability-roadmap.png` | capability path from LLM foundations to productization | root README |
 | `agent-runtime-architecture.png` | runtime control, loop, and data planes | README and architecture docs |
-| `paper-agent-pipeline.png` | paper-analysis pipeline | root README |
-| `minimal-agent-loop.png` | decision and action loop | README and Paper Agent guide |
+| `your-agent-pipeline.png` | paper-analysis pipeline | root README |
+| `minimal-agent-loop.png` | decision and action loop | README and Your Agent guide |
 | `agent-replayable-trajectory.png` | replayable run trace | root README |
 
 ## Shared Visual Prompt

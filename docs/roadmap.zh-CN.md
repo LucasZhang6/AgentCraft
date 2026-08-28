@@ -17,7 +17,7 @@
 
 ## 项目里程碑
 
-当前参考实现已覆盖真实 Provider 流式输出、模型回退与 Prompt Cache，文件/Shell/搜索/网页/澄清/子 Agent/插件/MCP 工具，结构化 Session、独立 Goal、持久 DAG Planning、SQLite Memory、L1/L2/L3 压缩、CLI/TUI/Web/飞书入口，以及跨平台构建、E2E、浏览器和发布回归。
+当前参考实现已覆盖真实 Provider 流式输出、模型回退与 Prompt Cache，文件/Shell/搜索/网页/澄清/子 Agent/插件/MCP 工具，结构化 Session、独立 Goal、持久 DAG Planning、SQLite Memory、L0/L1/L2/L3 压缩、CLI/TUI/Web/飞书入口，以及跨平台构建、E2E、浏览器和发布回归。
 
 下一阶段重点是受控 PDF 解析和引用核验、Memory 候选确认与冲突处理、公开真实任务评估集、生产级进程/网络/租户隔离、飞书长连接与加密回调，以及从多次验收轨迹中提取可版本化 Skill。
 

@@ -12,15 +12,15 @@ build-site:
 
 build-agent:
 	mkdir -p $(BIN_DIR)
-	$(GO_BUILD) -o $(BIN_DIR)/paper-agent ./examples/paper-agent/cmd/paper-agent
+	$(GO_BUILD) -o $(BIN_DIR)/your-agent ./examples/your-agent/cmd/your-agent
 
 build-server:
 	mkdir -p $(BIN_DIR)
-	$(GO_BUILD) -o $(BIN_DIR)/paper-agent-server ./examples/paper-agent/cmd/paper-agent-server
+	$(GO_BUILD) -o $(BIN_DIR)/your-agent-server ./examples/your-agent/cmd/your-agent-server
 
 build-feishu:
 	mkdir -p $(BIN_DIR)
-	$(GO_BUILD) -o $(BIN_DIR)/feishu-adapter ./examples/paper-agent/cmd/feishu-adapter
+	$(GO_BUILD) -o $(BIN_DIR)/feishu-adapter ./examples/your-agent/cmd/feishu-adapter
 
 test: docs-locales test-site test-go
 
@@ -31,7 +31,7 @@ test-site:
 	npm --prefix ai-agent-roadmap-site test
 
 test-go:
-	$(GO_TEST) ./examples/paper-agent/...
+	$(GO_TEST) ./examples/your-agent/...
 
 e2e: build-agent build-server
 	bash scripts/e2e.sh

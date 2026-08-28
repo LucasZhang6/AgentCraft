@@ -30,7 +30,7 @@ try {
     if ((await page.locator("html").getAttribute("lang")) !== "zh-CN") throw new Error(`${viewport.name}: Chinese locale was not applied`);
 
     await page.getByRole("link", { name: "参考实现", exact: true }).click();
-    await page.getByRole("heading", { name: /参考实现: Paper Agent/ }).waitFor();
+    await page.getByRole("heading", { name: /参考实现: Your Agent/ }).waitFor();
     if ((await page.locator(".phase-card").count()) !== 7) throw new Error(`${viewport.name}: expected 7 implementation layers`);
     const chinesePractice = await page.locator("main").innerText();
     for (const token of ["Prompt Cache", "MCP", "awaiting_acceptance", "L3"]) {
@@ -38,7 +38,7 @@ try {
     }
 
     await page.getByRole("button", { name: "English", exact: true }).click();
-    await page.getByRole("heading", { name: /Reference runtime: Paper Agent/ }).waitFor();
+    await page.getByRole("heading", { name: /Reference runtime: Your Agent/ }).waitFor();
     if (new URL(page.url()).hash !== "#/practice/timeline") throw new Error(`${viewport.name}: locale switch lost the current route`);
     await assertNoOverflow(page, `${viewport.name} English practice`);
 

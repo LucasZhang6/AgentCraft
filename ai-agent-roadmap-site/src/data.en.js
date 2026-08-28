@@ -63,7 +63,7 @@ const moduleTranslations = {
     summary:
       "Productization joins provider routing, a controller, durable goals and plans, controlled tools, lifecycle memory, independent evaluation, trace storage, user interfaces, and release gates. The objective is not to maximize component count; it is to produce a system whose behavior can be resumed, audited, limited, and improved.",
     build:
-      "Engineering focus: Paper Agent provides a Go reference runtime with offline and real providers, permissions, SQLite state, layered compaction, CLI/TUI/Web/Feishu surfaces, metrics, E2E tests, browser regression, and cross-platform release artifacts."
+      "Engineering focus: Your Agent provides a Go reference runtime with offline and real providers, permissions, SQLite state, layered compaction, CLI/TUI/Web/Feishu surfaces, metrics, E2E tests, browser regression, and cross-platform release artifacts."
   }
 };
 
@@ -164,7 +164,7 @@ Limits and implementation: A survey cannot choose the right storage, planner, or
 
 Method and evidence: The authors trace agent concepts and explain why LLMs can act as general foundations, then organize systems into brain, perception, and action. The brain covers interaction, knowledge, and reasoning; perception extends from text to visual and auditory signals; action includes tools and embodied control. The review surveys single-agent, multi-agent, human-agent, and social simulation applications and their open challenges.
 
-Agent relevance: A browser agent observes DOM and pixels, an SRE agent observes logs and metrics, and Paper Agent observes documents and tool results. Their controller loop can share a protocol while state representations, capabilities, policy, and success evidence differ. The framework helps define adapter boundaries: normalize observations, propose typed actions, execute, then read the actual state.
+Agent relevance: A browser agent observes DOM and pixels, an SRE agent observes logs and metrics, and Your Agent observes documents and tool results. Their controller loop can share a protocol while state representations, capabilities, policy, and success evidence differ. The framework helps define adapter boundaries: normalize observations, propose typed actions, execute, then read the actual state.
 
 Limits and implementation: Brain, perception, and action are high-level categories; they do not solve multimodal grounding, rollback, or permission isolation. Every observation should retain source and time, every action should fit an explicit schema, and the system should verify post-action state rather than trusting a narrative. Add modality-specific evaluation because textual confidence cannot prove visual or physical success.`
     },
@@ -214,7 +214,7 @@ Limits and implementation: Letting an LLM rewrite old memory can propagate one m
 
 Method and evidence: The agent generates subgoals, acts and accumulates a trajectory, detects subgoal completion, and uses observation summarization to replace the completed block. Trajectory retrieval can later restore detail. On five AgentBoard tasks exceeding twenty steps, the paper reports higher average success, fewer steps, and lower context-token use, demonstrating that planning boundaries can also be memory boundaries.
 
-Agent relevance: Planning and memory should be designed together. Paper Agent keeps recent observations, compresses completed phases, and retains complete Session and JSONL history outside the prompt. A subgoal or user-turn boundary provides a safer cut point than truncating arbitrary tokens. Summary provenance permits later inspection when a compacted view appears incomplete.
+Agent relevance: Planning and memory should be designed together. Your Agent keeps recent observations, compresses completed phases, and retains complete Session and JSONL history outside the prompt. A subgoal or user-turn boundary provides a safer cut point than truncating arbitrary tokens. Summary provenance permits later inspection when a compacted view appears incomplete.
 
 Limits and implementation: A summary may discard detail whose relevance appears only later, and an incorrect subgoal-completion decision can compress too early. Preserve original messages and traces, store coverage metadata, and allow a fallback to raw evidence. Evaluate success, tokens, summary cost, and context-recovery frequency together; compression that saves tokens but increases retries may not be efficient.`
     },
@@ -342,7 +342,7 @@ Limits and implementation: Multi-agent evaluation may reward discussion length o
 
 Method and evidence: The benchmark defines smartphone tasks, environments, action interfaces, and evaluation procedures that exercise navigation and state changes. It compares agents under real or realistic interaction constraints rather than static question answering. Specific scores are tied to device setup, application versions, and task definitions, which are part of the benchmark contract.
 
-Agent relevance: A GUI controller should record observations before and after each action, preserve screenshots or structured state, and let an external verifier determine success. The same pattern maps to Paper Agent citations, coding-agent tests, and operations-agent metrics. Environment evidence should enter the trace and stop decision.
+Agent relevance: A GUI controller should record observations before and after each action, preserve screenshots or structured state, and let an external verifier determine success. The same pattern maps to Your Agent citations, coding-agent tests, and operations-agent metrics. Environment evidence should enter the trace and stop decision.
 
 Limits and implementation: Mobile applications change, nondeterministic UI delays complicate scoring, and a benchmark may not represent private workflows. Version the environment, reset state between runs, distinguish action failure from verification failure, and include latency and human intervention. Never use the model's own completion sentence as the only success signal.`
     },
@@ -417,7 +417,7 @@ Limits and implementation: Correct-answer reward can tolerate poor sources or ac
 
 Method and evidence: AgentGym-RL uses a modular architecture to connect several environments and RL algorithms. ScalingInter-RL begins with shorter interactions to exploit existing ability and gradually increases the horizon to encourage exploration as training stabilizes. The curriculum attempts to avoid losing useful reward when the initial action space is too large.
 
-Agent relevance: A runtime trace needs observation, action, tool arguments, environment result, reward, and stop reason. Paper Agent already stores many of these fields, but RL additionally requires resettable tasks, stable versioned reward, train/evaluation isolation, and enough repeated interaction to estimate policy change. Production user work is not an exploration environment.
+Agent relevance: A runtime trace needs observation, action, tool arguments, environment result, reward, and stop reason. Your Agent already stores many of these fields, but RL additionally requires resettable tasks, stable versioned reward, train/evaluation isolation, and enough repeated interaction to estimate policy change. Production user work is not an exploration environment.
 
 Limits and implementation: Long horizons create sparse feedback and high sampling cost, and framework gains depend on the selected tasks. Build sandbox tasks first, increase budgets gradually, classify intermediate failures, and compare against supervised or fixed-policy baselines. Keep unvalidated policies in offline or shadow execution until outcome, cost, and safety regressions pass.`
     },
@@ -429,7 +429,7 @@ Limits and implementation: Long horizons create sparse feedback and high samplin
 
 Method and evidence: The framework distills raw trajectories into a hierarchical SkillBank with general and task-specific knowledge, retrieves a limited relevant subset, and recursively evolves the skill store with the RL policy. Experiments in ALFWorld, WebShop, and search-augmented tasks report gains over baselines while reducing the token redundancy of raw trajectory reuse.
 
-Agent relevance: Skills sit between memory and policy. They need triggers, inputs, outputs, tool dependencies, failure handling, version, provenance, and acceptance statistics. A Paper Agent procedure for paper comparison or citation checking should be promoted only after repeated accepted runs and should remain subject to the current plan and tool policy.
+Agent relevance: Skills sit between memory and policy. They need triggers, inputs, outputs, tool dependencies, failure handling, version, provenance, and acceptance statistics. A Your Agent procedure for paper comparison or citation checking should be promoted only after repeated accepted runs and should remain subject to the current plan and tool policy.
 
 Limits and implementation: A wrong or over-specific skill can replicate old bias quickly, and automatic evolution can make behavior hard to reproduce. Require minimum evidence, applicability scope, version history, rollback, and retirement. Evaluate retrieval and downstream outcome through A/B tests and ablation. A skill library should shorten reliable behavior, not become another ever-growing prompt.`
     }
@@ -453,9 +453,9 @@ Limits and implementation: Multiple agents add communication cost, SOPs can be r
       tags: ["Reference Runtime", "Observability", "Productization"],
       overview:
         "This project maps the effectiveness-first principles of Toward Efficient Agents into a Go runtime: provider routing, controlled tools, durable sessions/goals/plans/memory, layered context compression, evaluation, metrics, and real user surfaces in one regression-tested loop.",
-      explanation: `Intuition: A reference agent is valuable when it demonstrates accepted outcomes under visible cost and policy, not when it merely contains components with fashionable names. Paper Agent keeps a deterministic mode and a real provider behind the same contracts, so the surrounding state machine can be tested without confusing model randomness with runtime correctness.
+      explanation: `Intuition: A reference agent is valuable when it demonstrates accepted outcomes under visible cost and policy, not when it merely contains components with fashionable names. Your Agent keeps a deterministic mode and a real provider behind the same contracts, so the surrounding state machine can be tested without confusing model randomness with runtime correctness.
 
-Method and evidence: This is a maintainer engineering mapping, not a new algorithm claimed by the survey. The current runtime includes SSE and model fallback, structured plan and action parsing, DAG validation and persistence, controlled file/shell/web/plugin/MCP tools, scoped SQLite memory, independent Goal and Session state, L1/L2/L3 compaction, deterministic evaluation, and redacted traces with efficiency metrics.
+Method and evidence: This is a maintainer engineering mapping, not a new algorithm claimed by the survey. The current runtime includes SSE and model fallback, structured plan and action parsing, DAG validation and persistence, controlled file/shell/web/plugin/MCP tools, scoped SQLite memory, independent Goal state, transactional canonical Session turns with native reasoning/tool blocks, L1/L2/L3 compaction, deterministic evaluation, and redacted traces with efficiency metrics.
 
 Agent relevance: CLI, readline, TUI, Web UI, HTTP/SSE, and Feishu reuse one core. Build, E2E, browser, open-source, and cross-platform release checks exercise product surfaces rather than only unit functions. The state split and metrics create a foundation for domain-specific tools, evaluation sets, and later skill or preference optimization without binding the system to one model vendor.
 

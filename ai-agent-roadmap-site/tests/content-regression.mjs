@@ -33,11 +33,11 @@ assert(practiceProject.theoryMaps.length >= 8, "practice project should map to a
 assert(practiceProject.codeTour.length >= 6, "practice project should include a concrete code reading path");
 assert(practiceProject.lessons.length >= 6, "practice project should include engineering lessons");
 assert(
-  practiceProject.stats.some((item) => item.label === "Persistent stores" && item.value === "5"),
+  practiceProject.stats.some((item) => item.label === "Persistent stores" && item.value === "7"),
   "practice project should identify all persistent state owners"
 );
 assert(
-  practiceProject.codeTour.some((item) => item.paths.includes("cmd/paper-agent/main.go")),
+  practiceProject.codeTour.some((item) => item.paths.includes("cmd/your-agent/main.go")),
   "practice project should link to the Go CLI entrypoint"
 );
 assert(
@@ -129,7 +129,7 @@ assert(app.includes("${paper.overview}"), "paper views should render the overvie
 assert(!app.includes('target="_blank" rel="noreferrer">打开论文'), "paper primary action must not jump straight to an external site");
 assert(app.includes('t("openLocalPdf")'), "paper reader should open the local PDF asset with localized copy");
 assert(!app.includes('href="${paper.url}"'), "paper reader must not use the external source as its main link");
-assert(app.includes("renderPractice"), "app must render the Paper Agent practice tab page");
+assert(app.includes("renderPractice"), "app must render the Your Agent practice tab page");
 assert(!app.includes("Verdent"), "public practice content must not depend on a private Verdent repository");
 assert(app.includes("#/practice/timeline"), "app must link to the practice timeline tab");
 assert(app.includes("saveSelectionNote"), "app must support saving selected text as notes");

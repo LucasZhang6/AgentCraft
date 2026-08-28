@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `agent-capability-roadmap.png` | Agent 能力从 LLM 基础到产品化的演进路线 | 根 README |
 | `agent-runtime-architecture.png` | Runtime 控制平面、闭环与数据平面 | 根 README、`docs/architecture.md` |
-| `paper-agent-pipeline.png` | Paper Agent 的论文处理流水线 | 根 README |
+| `your-agent-pipeline.png` | Your Agent 的论文处理流水线 | 根 README |
 | `minimal-agent-loop.png` | 最小 Agent 决策与行动闭环 | 根 README、示例 README |
 | `agent-replayable-trajectory.png` | 单次运行的可回放轨迹 | 根 README |
 
@@ -48,10 +48,10 @@ Data plane: Logger -> Trajectory Store -> Skill Library.
 Do not draw connectors across the band separator.
 ```
 
-### Paper Agent 处理流水线
+### Your Agent 处理流水线
 
 ```text
-Title: "Paper Agent 处理流水线"
+Title: "Your Agent 处理流水线"
 Paper URL -> Metadata / PDF / Repository Tools -> Paper Type Detection ->
 Structured Plan. Branch into Problem, Method, Evidence, and Limitations. Merge
 into Citation & Completeness Evaluation. Output Structured Result and Preference

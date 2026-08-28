@@ -9,7 +9,7 @@ updates:
         patterns: ['*']
 
   - package-ecosystem: gomod
-    directory: /examples/paper-agent
+    directory: /examples/your-agent
     schedule:
       interval: weekly
     groups:

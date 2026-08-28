@@ -232,8 +232,8 @@ function renderHome() {
       <section class="section split-section">
         <div>
           <p class="eyebrow">Build Direction</p>
-          <h2>${t("paperAgentTitle")}</h2>
-          <p>${t("paperAgentBody")}</p>
+          <h2>${t("yourAgentTitle")}</h2>
+          <p>${t("yourAgentBody")}</p>
         </div>
         <div class="checklist">
           ${t("checklist").map((item) => `<span>${item}</span>`).join("")}

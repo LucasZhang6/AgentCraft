@@ -7,7 +7,7 @@ coverage/
 artifacts/
 *.log
 .gocache/
-/examples/paper-agent/main
+/examples/your-agent/main
 
 # The Android wrapper is maintained locally and is intentionally excluded from
 # the open-source repository.

@@ -19,7 +19,7 @@ that can be implemented and evaluated.
 
 ## Implemented Baseline
 
-Paper Agent currently provides:
+Your Agent currently provides:
 
 - deterministic and OpenAI-compatible model providers
 - streaming, fallback, prompt-cache and usage accounting
@@ -27,7 +27,7 @@ Paper Agent currently provides:
 - file, shell, search, web, clarification, subagent, plugin, and MCP tools
 - risk levels, approval, timeout, output limits, and host boundaries
 - structured Sessions, Goals, Plans, Memory, Metrics, and trajectories
-- L1/L2/L3 session compaction and context-length recovery
+- L0/L1/L2/L3 session compaction and context-length recovery
 - plan validation, persistence, dependencies, role concurrency, verification,
   and human acceptance
 - CLI, readline, TUI, Web UI, HTTP/SSE, and Feishu entry points

@@ -2,7 +2,7 @@
 
 [English](SECURITY.md) | [简体中文](SECURITY.zh-CN.md)
 
-Paper Agent includes real file, shell, web, plugin, MCP, memory, and model
+Your Agent includes real file, shell, web, plugin, MCP, memory, and model
 integration code. Its policy boundaries are designed to be inspectable, but the
 project is a reference implementation and is not a production security
 certification.
@@ -47,7 +47,7 @@ to immutable commit SHAs and Dependabot proposes reviewed updates.
 ## Deployment Notes
 
 Bind the HTTP server to loopback unless it is placed behind authenticated TLS.
-Set `PAPER_AGENT_ACCESS_ID` when another process connects to the API. Keep the
+Set `YOUR_AGENT_ACCESS_ID` when another process connects to the API. Keep the
 Feishu sidecar separate from LLM credentials, verify callback tokens, and apply
 rate limits at the public ingress. Reassess filesystem, process, network, and
 tenant isolation before granting the agent access to private or production

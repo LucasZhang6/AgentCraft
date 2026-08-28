@@ -4,8 +4,13 @@
 
 AgentCraft connects **agent theory, representative papers, and a runnable
 implementation**. About 40% of the project is devoted to paper analysis; the
-rest turns those ideas into a Go runtime that can be inspected, tested, and
-extended into a personal agent.
+rest turns those ideas into **Your Agent**, a user-owned Go runtime designed to
+be shaped into a highly customized personal assistant.
+
+The repository ships a paper-research profile as its concrete, testable default.
+The runtime boundaries are intentionally general: providers, prompts, tools,
+permissions, memory scopes, planning roles, evaluators, adapters, and UI
+surfaces can be replaced without rewriting the core loop.
 
 The project follows one continuous system model:
 
@@ -22,7 +27,7 @@ The repository currently includes:
 - 8 agent-system topics and 31 representative paper reviews
 - a short overview and a four-part detailed explanation for every paper
 - locally cached paper PDFs and an in-browser PDF.js reader
-- a production-shaped Paper Agent runtime written in Go
+- a production-shaped Your Agent runtime written in Go
 - CLI, TUI, Web UI, HTTP API, and Feishu entry points
 - persistent sessions, goals, plans, memory, metrics, and replayable traces
 - cross-platform builds, E2E and browser regression, CodeQL, dependency audits,
@@ -58,8 +63,8 @@ make build
 Artifacts are written to `dist/bin/`:
 
 ```text
-paper-agent
-paper-agent-server
+your-agent
+your-agent-server
 feishu-adapter
 ```
 
@@ -72,13 +77,13 @@ npm run agent -- "Explain a representative paper about agent memory"
 Run the persistent terminal UI:
 
 ```bash
-dist/bin/paper-agent -interactive -provider demo
+dist/bin/your-agent -interactive -provider demo
 ```
 
 Run the Web UI and HTTP API:
 
 ```bash
-dist/bin/paper-agent-server -provider demo
+dist/bin/your-agent-server -provider demo
 ```
 
 Open `http://127.0.0.1:18080/`.
@@ -116,7 +121,7 @@ The reading map is most useful when every idea is tied to a runtime object:
 | Theory | Runtime object | Evidence to retain |
 | --- | --- | --- |
 | In-context learning | prompt assembly and provider routing | model, prompt version, input tokens, latency |
-| Agent Loop / ReAct | controller state machine | decision, action, observation, stop reason |
+| Agent Loop / ReAct | scheduler plus provider-native tool loop | ready step, call ID, action, observation, stop reason |
 | Toolformer | tool registry and execution policy | schema result, permission, duration, bounded output |
 | Planning research | validated DAG and scheduler | dependencies, attempts, evidence, acceptance state |
 | Memory research | scoped memory lifecycle | source, confidence, status, timestamps, retrieval budget |
@@ -128,44 +133,47 @@ This mapping keeps the project honest. A model-generated plan is not yet a
 recoverable plan; a vector database is not yet a memory lifecycle; a fluent
 answer is not yet task completion.
 
-## Current Paper Agent Runtime
+## Current Your Agent Runtime
 
-`examples/paper-agent/` is a Go implementation of the system described above.
+`examples/your-agent/` is a Go implementation of the system described above.
 It retains a deterministic `DemoModel` for offline regression and supports an
 OpenAI-compatible Responses provider for real model execution.
 
-![Paper Agent control loop with planning, tools, evaluation, and memory](assets/architecture/minimal-agent-loop.png)
+![Your Agent control loop with planning, tools, evaluation, and memory](assets/architecture/minimal-agent-loop.png)
 
 ### Runtime Layers
 
 | Layer | Current implementation |
 | --- | --- |
-| Provider | OpenAI-compatible Responses API, SSE streaming, bounded retry, model fallback, prompt-cache accounting, usage metrics, custom base URL |
-| Controller | ReAct-style `Decide -> Tool -> Observation`, cancellation, explicit stop reasons, context recovery |
+| Provider | OpenAI-compatible Responses API, SSE streaming, pre-output interruption recovery, model fallback, prompt-cache accounting, usage metrics, custom base URL |
+| Agent execution | Scheduler-owned ready steps with provider-native tool calling/ReAct, cancellation, explicit stop reasons, context recovery |
 | Goal | independent SQLite lifecycle with pause, resume, clear, auto-resume, accumulated tokens and turns; zero limits mean unlimited by default |
-| Planning | model-generated structured plans, deterministic validation, SQLite persistence, dependency scheduling, role-based parallel steps, verifier, human acceptance |
-| Tools | paper lookup, workspace file operations, shell, grep/glob, web fetch/search, clarification, subagent, command plugins, and MCP stdio tools |
+| Planning | model-generated structured plans, per-step controlled tool sets, deterministic validation, SQLite persistence, dependency scheduling, role-based parallel steps, verifier, human acceptance |
+| Tools | paper lookup, workspace file operations, shell, grep/glob, local semantic symbol search, web fetch/search, clarification, independent tool-enabled subagents, Skills, command plugins, and MCP stdio tools |
 | Tool policy | allowlist, JSON-like schema validation, read/write/dangerous risk levels, approval, timeout, bounded output, workspace and network boundaries |
 | Memory | SQLite records with scope, source, confidence, active/archived status, timestamps, upsert semantics, result-count and byte retrieval budgets |
-| Session | structured messages and events in SQLite, status and usage, titles, list and fork support, full history retained across restarts |
+| Session | transactional canonical turns; native reasoning/tool blocks and call IDs; status, metrics, migration, fork, and structured restart recovery |
 | Context | L1 micro-compaction, L2 deterministic digest, asynchronous L3 model summary, and two-stage context-length recovery |
-| Evaluation | deterministic report checks plus plan-step evidence and optional human acceptance |
+| Evaluation | deterministic report checks, plan-step evidence, optional human acceptance, and a host-owned Verification Gate after material work |
 | Observability | redacted JSONL trajectories, run metrics, cumulative success rate, tool and approval metrics, session-summary usage |
-| Interfaces | one-shot CLI, readline history and search, Markdown terminal rendering, full-screen TUI, Web UI, async HTTP API, Feishu sidecar |
+| Interfaces | one-shot CLI, readline history and search, Markdown terminal rendering, full-screen TUI, bounded HTTP queue, resumable SSE, Session/task REST API, file workbench, WebSocket PTY, and Feishu sidecar |
 | Delivery | `make build`, E2E process tests, Playwright desktop/mobile regression, open-source checks, cross-platform CI, archives, checksums, and optional Cosign signing |
 
-### Two Nested Loops
+### Scheduler and Continuation Loops
 
-Paper Agent separates a local reasoning loop from long-running goal
-continuation:
+Your Agent separates persisted scheduling, local reasoning, and long-running
+goal continuation:
 
-1. A **Goal turn** runs a bounded ReAct loop. The model may call a tool, read
-   the observation, revise its decision, and eventually propose a final result.
-2. The **Goal loop** evaluates that result. If acceptance fails, it compresses
-   old observations and continues the same persisted goal in another turn.
+1. The **Scheduler** dispatches only dependency-ready plan steps and can run
+   independent roles concurrently.
+2. Each **plan step** runs a bounded provider-native ReAct loop. The model emits
+   native function calls from the step's controlled tool set; the host returns
+   grouped results with matching call IDs.
+3. The **Goal loop** evaluates the completed plan. If acceptance fails, it
+   compresses old observations and continues the same persisted goal.
 
 `goal-turns=0` and `token-budget=0` mean no local limit. Individual turns are
-still bounded by `max-steps`; cancellation, pause, evaluator success, explicit
+still bounded by `max-steps` per scheduled step; cancellation, pause, evaluator success, explicit
 budgets, and unrecoverable failures remain stop conditions.
 
 ### State Is Deliberately Split
@@ -173,11 +181,13 @@ budgets, and unrecoverable failures remain stop conditions.
 The runtime does not store everything in one conversation blob:
 
 ```text
-sessions.db   complete messages, structured events, summary usage
+sessions.db   canonical turns/events, native blocks, per-turn status/metrics, summary usage
 goals.db      goal identity, state, continuation counters, token usage
 plans.db      DAG steps, dependencies, attempts, evidence, acceptance
 memory.db     selected cross-task facts with lifecycle and provenance
 metrics.db    per-run outcome and cumulative efficiency metrics
+tasks.db      asynchronous HTTP task state, approvals, messages, and restart status
+subagents.db  child-agent identity, parentage, lifecycle, result, and failure
 runs/*.jsonl  replayable and redacted execution trajectories
 ```
 
@@ -205,11 +215,18 @@ the metrics.
 
 ### Model Proposes, Host Authorizes
 
-The model emits a structured action. The host validates the decision type,
-tool name, arguments, risk, approval, timeout, output budget, and remaining
-task budget before execution. File tools reject workspace escape and symbolic
-link bypass; web tools reject loopback, private, and link-local targets and
-unsafe redirects. External plugins and MCP tools default to `dangerous`.
+The provider emits native function calls with stable call IDs. The host validates
+the tool name, arguments, risk, approval, timeout, output budget, and remaining
+task budget before execution, then returns a native matching tool result. File
+tools reject workspace escape and symbolic-link bypass; web tools reject
+loopback, private, and link-local targets and unsafe redirects. External plugins
+and MCP tools default to `dangerous`.
+
+After a plan performs material file work, a host-owned Verification Gate prevents
+completion without an observed test, build, lint, or equivalent verification
+command. Skills are versionable Markdown instructions loaded from repository,
+project, or user scope. Semantic code search uses a bounded local symbol/lexical
+index; it does not upload source code or pretend to be an embedding service.
 
 This is the practical consequence of Toolformer, AgentPoison, and agent-safety
 research: learned tool selection is a policy signal, never an authorization
@@ -224,7 +241,7 @@ export OPENAI_API_KEY="..."
 export OPENAI_BASE_URL="https://your-compatible-provider.example/v1"
 export OPENAI_MODEL="your-model-id"
 
-dist/bin/paper-agent \
+dist/bin/your-agent \
   -provider openai \
   -fallback-models "fallback-a,fallback-b" \
   "Compare A-MEM and HiAgent, then propose a memory schema"
@@ -232,7 +249,7 @@ dist/bin/paper-agent \
 
 The model creates candidate plans and actions. The Go host still owns DAG
 validation, tool schemas, permissions, timeouts, evaluation, and cost limits.
-See the full [Paper Agent runtime guide](examples/paper-agent/README.md).
+See the full [Your Agent runtime guide](examples/your-agent/README.md).
 
 ## Verification
 
@@ -263,7 +280,7 @@ browser behavior, release archives, and checksums.
 ```text
 .
 ├── ai-agent-roadmap-site/       # bilingual research map and local PDF reader
-├── examples/paper-agent/        # Go runtime, CLI, HTTP server, and adapters
+├── examples/your-agent/        # Go runtime, CLI, HTTP server, and adapters
 ├── docs/                        # architecture, engineering, roadmap, and corpus
 ├── assets/architecture/         # ImageGen architecture diagrams
 ├── agent_research_map_from_feishu_urls.md
@@ -274,7 +291,7 @@ Key documents:
 
 - [Architecture](docs/architecture.md)
 - [Engineering implementation](docs/engineering-practice.md)
-- [Paper Agent runtime](examples/paper-agent/README.md)
+- [Your Agent runtime](examples/your-agent/README.md)
 - [Feishu adapter](docs/feishu-adapter.md)
 - [Research roadmap](docs/roadmap.md)
 - [Paper review format](docs/paper-reading-template.md)

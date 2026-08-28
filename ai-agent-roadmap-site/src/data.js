@@ -131,7 +131,7 @@ Agent 意义：这套分类可以直接变成系统边界和代码接口。Contr
 
 方法拆解：作者从 Agent 概念的历史出发，解释为什么 LLM 适合作为通用基础，再提出 brain、perception、action 三部分框架。Brain 涵盖自然语言交互、知识和推理；Perception 扩展到文本之外的视觉、听觉等信号；Action 包括工具使用、具身控制以及对外部环境的反馈。论文进一步梳理单 Agent、多 Agent、人机协作和社会模拟等应用与挑战。
 
-Agent 意义：不同产品表面差异很大，底层仍可还原为 Observe、Decide、Act、Observe。浏览器 Agent 的感知是 DOM 与截图，SRE Agent 的感知是指标与日志，Paper Agent 的感知是论文和检索结果；它们主要更换状态表示、工具集合、风险规则和完成判定，Controller 闭环可以保持稳定。
+Agent 意义：不同产品表面差异很大，底层仍可还原为 Observe、Decide、Act、Observe。浏览器 Agent 的感知是 DOM 与截图，SRE Agent 的感知是指标与日志，Your Agent 的感知是论文和检索结果；它们主要更换状态表示、工具集合、风险规则和完成判定，Controller 闭环可以保持稳定。
 
 局限与落地：大脑、感知、行动是高层地图，不能自动解决跨模态对齐、错误动作恢复或权限隔离。工程上要把每种 observation 规范化并保留来源，把 action 限制在显式 schema 中，并在动作后读取真实环境状态，而不是相信模型口头宣称成功。只有闭环读回证据，感知和行动才真正连起来。`
       },
@@ -147,7 +147,7 @@ Agent 意义：不同产品表面差异很大，底层仍可还原为 Observe、
 
 Agent 意义：Memory 决定历史压缩和检索成本，Tool Use 决定外部调用收益，Planning 决定搜索空间和执行步数。三者并非独立：更好的计划可能少调工具，好的记忆可能避免重复探索，过度压缩又可能降低成功率。因此 Runtime 应把成功率、token、延迟、调用数、重试和压缩次数记录在同一条轨迹中。
 
-局限与落地：综述总结的是高层共性，不代表某种压缩或小模型路由在所有任务都有效。工程上先建立质量基线和成本基线，再一次改变一个策略，用真实任务做固定预算或固定质量比较。Paper Agent 的 Session 压缩、工具预算和指标库正是这种思路的落点，但仍需公开评测集才能证明优化不是只对演示任务有效。`
+局限与落地：综述总结的是高层共性，不代表某种压缩或小模型路由在所有任务都有效。工程上先建立质量基线和成本基线，再一次改变一个策略，用真实任务做固定预算或固定质量比较。Your Agent 的 Session 压缩、工具预算和指标库正是这种思路的落点，但仍需公开评测集才能证明优化不是只对演示任务有效。`
       }
     ]
   },
@@ -200,7 +200,7 @@ Agent 意义：A-MEM 提醒我们，召回质量取决于写入后的组织方�
 
 方法拆解：论文先让模型生成 subgoal，再围绕它行动并积累轨迹；模型判断子目标完成后，Observation Summarization 将这一块压缩成“子目标-摘要观察”，替换旧动作细节。Trajectory Retrieval 允许后续任务在必要时重新展开某个历史子目标。五个超过二十步的 AgentBoard 任务中，论文报告平均成功率从百分之二十一提升到百分之四十二，平均步骤减少三点八，上下文 token 约下降百分之三十五。
 
-Agent 意义：它展示了 Planning 与 Memory 应共同设计：计划中的子目标天然就是压缩边界。Paper Agent 可以保留当前检索和工具结果，将已完成阶段压成带来源的摘要；Session 层则保留全量历史，只改变送模视图。这样既控制上下文，又能在摘要不足时回查原始轨迹。
+Agent 意义：它展示了 Planning 与 Memory 应共同设计：计划中的子目标天然就是压缩边界。Your Agent 可以保留当前检索和工具结果，将已完成阶段压成带来源的摘要；Session 层则保留全量历史，只改变送模视图。这样既控制上下文，又能在摘要不足时回查原始轨迹。
 
 局限与落地：摘要可能删掉后来才重要的细节，子目标判断错误也会过早压缩。论文实验主要使用特定长程环境和模型，不能直接外推所有工作流。工程上应保留原始数据库记录，在用户轮次或已验证子目标边界裁剪，为摘要保存来源链接，并把压缩前后 token、成功率和恢复次数一起评估。`
       },
@@ -269,7 +269,7 @@ Agent 意义：三个阶段适合分别观测。Registry 可以先按权限、�
 
 方法拆解：论文提出 customizable、conversable agent 抽象，Agent 可以组合 LLM、工具、人类输入和执行环境。开发者既能用自然语言，也能用代码定义双人对话、群聊、层级聊天等 conversation patterns。论文用数学、编码、决策和应用案例展示通用性，贡献主要是编排框架与设计范式，不是证明多 Agent 在所有任务上优于单 Agent。
 
-Agent 意义：AutoGen 的消息协议可以映射为统一 event 和 observation：谁发送、引用哪个任务、携带什么工具结果、何时结束都应结构化。即使 Paper Agent 保持单 Agent，也能借鉴可替换角色、人工介入和终止判断；当任务确实需要并行专业能力时，再把 Planner、Executor 或 Reviewer 拆开。
+Agent 意义：AutoGen 的消息协议可以映射为统一 event 和 observation：谁发送、引用哪个任务、携带什么工具结果、何时结束都应结构化。即使 Your Agent 保持单 Agent，也能借鉴可替换角色、人工介入和终止判断；当任务确实需要并行专业能力时，再把 Planner、Executor 或 Reviewer 拆开。
 
 局限与落地：Agent 数量增加会带来通信 token、重复工作、循环对话和权限扩散；会话顺利结束也不代表业务状态真实完成。工程上先建立单 Agent 基线，再为每个新增角色证明收益，限制消息预算和最大轮次。代码执行环境必须隔离，工具权限归宿主控制，最终结果应由测试或环境状态验收。`
       },
@@ -297,7 +297,7 @@ Agent 意义：对单 Agent 同样有启发：计划步骤应该规定输入、�
 
 方法拆解：论文把代码表示的 workflow 搜索建模为 Monte Carlo Tree Search。每次迭代根据树中经验选择候选，用 LLM 修改代码化节点和连接，在数据集上执行后把反馈写回搜索树。六个基准上的实验报告相对强基线平均提升约百分之五点七，并展示某些小模型工作流可以用 GPT-4o 约百分之四点五五的成本取得更好结果。
 
-Agent 意义：AFlow 说明轨迹和 Evaluator 不只是排错工具，还能成为自动改进 workflow 的训练信号。Paper Agent 未来可以搜索是否先读摘要、何时补检索、需不需要 Reviewer，但候选流程仍应经过代码校验、权限策略和隔离执行，不能让优化器随意扩张工具能力。
+Agent 意义：AFlow 说明轨迹和 Evaluator 不只是排错工具，还能成为自动改进 workflow 的训练信号。Your Agent 未来可以搜索是否先读摘要、何时补检索、需不需要 Reviewer，但候选流程仍应经过代码校验、权限策略和隔离执行，不能让优化器随意扩张工具能力。
 
 局限与落地：自动搜索会消耗大量评测调用，也可能过拟合固定 benchmark，甚至利用评估器漏洞获得高分。第一版应先手写透明流程并积累真实任务，之后只在沙箱里优化可控参数；保留独立测试集、成本上限和版本回滚，并要求新 workflow 同时改善质量与成本后才进入生产。`
       }
@@ -476,7 +476,7 @@ Agent 意义：研究 Agent 不应只有固定“先搜一次”流程，而要�
 
 方法拆解：框架采用模块化、解耦架构接入多类真实场景和主流 RL 算法，并强调无需先依赖监督微调即可从交互中训练。作者提出 ScalingInter-RL：早期限制交互长度，偏向利用已有能力以稳定优化；训练推进后逐步增加 horizon，转向更充分探索。这个课程式策略平衡 exploration 与 exploitation，避免模型一开始就在巨大动作空间中失去有效奖励。
 
-Agent 意义：训练数据必须保存 observation、action、工具参数、环境反馈、奖励和停止原因，而不只是最终回答。Paper Agent 已有 JSONL 轨迹、token、工具和成功指标，可作为未来离线分析基础；若要进入 RL，还需要可重置环境、稳定 reward、轨迹版本和策略评测隔离。
+Agent 意义：训练数据必须保存 observation、action、工具参数、环境反馈、奖励和停止原因，而不只是最终回答。Your Agent 已有 JSONL 轨迹、token、工具和成功指标，可作为未来离线分析基础；若要进入 RL，还需要可重置环境、稳定 reward、轨迹版本和策略评测隔离。
 
 局限与落地：长 horizon 带来稀疏奖励、环境并发和高采样成本，训练框架上的提升也依赖所接场景。真实用户任务不适合让未验证策略自由探索。工程上先在可重置沙箱构造任务，逐渐放宽步骤预算，对失败类型分层奖励，并把训练策略部署到影子环境，通过固定回归集后才扩大权限。`
       },
@@ -505,7 +505,7 @@ Agent 意义：Skill 位于 Memory 和 Policy 之间：它不是一条事实，�
     summary:
       "工程化的关键是可观测、可控、可迭代。第一版不急着训练模型，而是先做一个可靠闭环，让每次行为都能记录、回放和改进。只有当系统能稳定运行并积累轨迹，后续多 Agent、RL 和技能库才有意义。",
     build:
-      "工程落点：Paper Agent 或个人研究助手提供边界清晰的参考场景。输入链接后，系统完成抓取、解读、引用、总结、记忆沉淀和质量评估。",
+      "工程落点：Your Agent 或个人研究助手提供边界清晰的参考场景。输入链接后，系统完成抓取、解读、引用、总结、记忆沉淀和质量评估。",
     papers: [
       {
         title: "AutoGen + MetaGPT + AFlow 的工程组合",
@@ -527,11 +527,11 @@ Agent 意义：专属 Agent 第一版可以保持单 Agent，但内部应有 Con
         tags: ["MVP", "研究助手", "可观测"],
         overview:
           "该条目用 Toward Efficient Agents 的效果优先原则审视当前 Go Runtime：把 Provider、真实工具、Session、Goal、Planning、Memory、压缩、评估、指标和多种用户入口放进一个可回归闭环，同时明确它仍是参考实现。",
-        explanation: `直觉理解：Toward Efficient Agents 提醒我们，参考实现的价值不在于组件名字齐全，而在于能否用可接受成本完成可验收任务。Paper Agent 保留确定性 DemoModel，又让真实 Provider 走同一套 Controller、权限、状态和评估；这样模型随机性不会掩盖 Runtime 错误，每次成功、失败、审批和压缩都有轨迹可查。
+        explanation: `直觉理解：Toward Efficient Agents 提醒我们，参考实现的价值不在于组件名字齐全，而在于能否用可接受成本完成可验收任务。Your Agent 保留确定性 DemoModel，又让真实 Provider 走同一套 Controller、权限、状态和评估；这样模型随机性不会掩盖 Runtime 错误，每次成功、失败、审批和压缩都有轨迹可查。
 
-方法拆解：这是维护者对综述原则的工程映射，不是论文原文提出的新算法。当前 Runtime 支持 Responses SSE、模型回退和 Prompt Cache；文件、Shell、grep/glob、网页、澄清、子 Agent、插件与 MCP 工具统一经过 schema、风险、审批、超时和输出预算；SQLite 分别保存 Session、Goal、Plan、Memory 与 Metrics；计划具有 DAG 校验、依赖调度、Verifier 和人工验收。
+方法拆解：这是维护者对综述原则的工程映射，不是论文原文提出的新算法。当前 Runtime 支持 Responses SSE、模型回退和 Prompt Cache；文件、Shell、grep/glob、网页、澄清、子 Agent、插件与 MCP 工具统一经过 schema、风险、审批、超时和输出预算；SQLite 分别保存 Session、Goal、Plan、Memory 与 Metrics，其中 Session 用 canonical turn/event 事务化保存原生 reasoning/tool blocks、tool-call ID、状态和每轮指标；计划具有 DAG 校验、依赖调度、Verifier 和人工验收。
 
-Agent 意义：同一核心通过一次性 CLI、readline、TUI、Web UI、异步 HTTP/SSE 和飞书入口复用。Session 全量历史保存在数据库，送模视图采用 L1 微压缩、L2 确定性 digest 与异步 L3 摘要；Goal 默认不限 Token 和轮次并可 pause/resume/clear。Token、Cache、延迟、工具、审批、压缩和成功率让效果与成本可以联合比较。
+Agent 意义：同一核心通过一次性 CLI、readline、TUI、Web UI、异步 HTTP/SSE 和飞书入口复用。Session 全量原生 blocks 保存在数据库，重启后按结构化 items 续接而不是文本回放；送模视图采用 L1 微压缩、L2 确定性 digest 与异步 L3 摘要。Goal 默认不限 Token 和轮次并可 pause/resume/clear。Token、Cache、延迟、工具、审批、压缩和成功率让效果与成本可以联合比较。
 
 局限与落地：Runtime 已有真实网页和宿主工具，但尚未完成可靠 PDF 文本抽取、章节定位、引用蕴含核验、多租户隔离、生产沙箱、Memory 冲突合并和飞书加密回调，因此不能声称已完成通用论文研究产品或生产安全认证。下一步应先建立固定真实任务与证据工具，再从多次验收轨迹中评估 Skill、Workflow 搜索或 RL。`
       }

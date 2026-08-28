@@ -51,7 +51,7 @@ Add or reuse a licensed local PDF mapping in `src/paper-library.js`. Do not
 commit downloaded PDFs. Add a publishable visual only when the paper requires a
 new entry, then run the content and paper-cache checks.
 
-## Changing Paper Agent
+## Changing Your Agent
 
 - Keep `DemoModel` deterministic and offline-testable.
 - Keep model decisions separate from host authorization.

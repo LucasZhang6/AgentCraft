@@ -2,7 +2,7 @@
 
 [English](feishu-adapter.md) | [简体中文](feishu-adapter.zh-CN.md)
 
-`feishu-adapter` 是连接飞书回调与 Paper Agent HTTP API 的独立 sidecar。飞书凭据、事件验签、卡片渲染和 `chat_id -> session_id` 映射留在适配器中；LLM Provider、工具权限和 Agent Loop 仍由 `paper-agent-server` 负责。
+`feishu-adapter` 是连接飞书回调与 Your Agent HTTP API 的独立 sidecar。飞书凭据、事件验签、卡片渲染和 `chat_id -> session_id` 映射留在适配器中；LLM Provider、工具权限和 Agent Loop 仍由 `your-agent-server` 负责。
 
 ## 能力范围
 
@@ -16,7 +16,7 @@
 
 当前使用 HTTP callback；尚未实现飞书长连接和加密回调载荷。
 
-消息与审批链路按 Verdent CLI 的飞书 sidecar 适配到 Paper Agent API；Verdent 的 scheduler notifier 不在本项目中，因为 Paper Agent 当前没有定时任务子系统。
+消息与审批链路按 Verdent CLI 的飞书 sidecar 适配到 Your Agent API；Verdent 的 scheduler notifier 不在本项目中，因为 Your Agent 当前没有定时任务子系统。
 
 ## 构建
 
@@ -29,12 +29,12 @@ make build
 产物位于：
 
 ```text
-dist/bin/paper-agent
-dist/bin/paper-agent-server
+dist/bin/your-agent
+dist/bin/your-agent-server
 dist/bin/feishu-adapter
 ```
 
-## 启动 Paper Agent
+## 启动 Your Agent
 
 API Key 只配置在 Agent Server 进程，不要传给飞书适配器：
 
@@ -42,12 +42,12 @@ API Key 只配置在 Agent Server 进程，不要传给飞书适配器：
 export OPENAI_API_KEY="..."
 export OPENAI_BASE_URL="https://your-openai-compatible-host/v1"
 export OPENAI_MODEL="your-model-id"
-export PAPER_AGENT_ACCESS_ID="replace-with-a-random-access-id"
+export YOUR_AGENT_ACCESS_ID="replace-with-a-random-access-id"
 
-dist/bin/paper-agent-server -provider openai
+dist/bin/your-agent-server -provider openai
 ```
 
-默认监听 `127.0.0.1:18080`。`PAPER_AGENT_ACCESS_ID` 启用登录换取 Bearer token；未设置时只适合本机受控环境。
+默认监听 `127.0.0.1:18080`。`YOUR_AGENT_ACCESS_ID` 启用登录换取 Bearer token；未设置时只适合本机受控环境。
 
 ## 启动适配器
 
@@ -55,8 +55,8 @@ dist/bin/paper-agent-server -provider openai
 export FEISHU_APP_ID="cli_xxx"
 export FEISHU_APP_SECRET="..."
 export FEISHU_VERIFICATION_TOKEN="..."
-export PAPER_AGENT_BASE_URL="http://127.0.0.1:18080"
-export PAPER_AGENT_ACCESS_ID="replace-with-the-same-access-id"
+export YOUR_AGENT_BASE_URL="http://127.0.0.1:18080"
+export YOUR_AGENT_ACCESS_ID="replace-with-the-same-access-id"
 
 dist/bin/feishu-adapter --addr :18790 --mode agent
 ```
@@ -67,12 +67,12 @@ dist/bin/feishu-adapter --addr :18790 --mode agent
 | `--feishu-app-id` | `FEISHU_APP_ID` | | 飞书应用 ID |
 | `--feishu-app-secret` | `FEISHU_APP_SECRET` | | 飞书应用 Secret |
 | `--feishu-verification-token` | `FEISHU_VERIFICATION_TOKEN` | | 回调验签 Token；配置后不匹配请求返回 401 |
-| `--paper-agent-url` | `PAPER_AGENT_BASE_URL` | `http://127.0.0.1:18080` | Agent HTTP API |
-| `--paper-agent-access-id` | `PAPER_AGENT_ACCESS_ID` | | Agent 登录凭据 |
-| `--db` | `FEISHU_ADAPTER_DB` | `~/.config/paper-agent/feishu-adapter.db` | 会话映射 SQLite |
+| `--your-agent-url` | `YOUR_AGENT_BASE_URL` | `http://127.0.0.1:18080` | Agent HTTP API |
+| `--your-agent-access-id` | `YOUR_AGENT_ACCESS_ID` | | Agent 登录凭据 |
+| `--db` | `FEISHU_ADAPTER_DB` | `~/.config/your-agent/feishu-adapter.db` | 会话映射 SQLite |
 | `--poll-interval` | `FEISHU_ADAPTER_POLL_INTERVAL` | `2s` | 状态轮询间隔 |
 | `--poll-timeout` | `FEISHU_ADAPTER_POLL_TIMEOUT` | `30m` | 单任务轮询上限 |
-| `--auto-approve` | `PAPER_AGENT_FEISHU_AUTO_APPROVE` | `false` | 自动批准工具，仅限可信环境 |
+| `--auto-approve` | `YOUR_AGENT_FEISHU_AUTO_APPROVE` | `false` | 自动批准工具，仅限可信环境 |
 
 ## 飞书控制台
 
@@ -96,4 +96,4 @@ dist/bin/feishu-adapter --addr :18790 --mode agent
 
 工具等待审批时，适配器发送 Approve/Reject 卡片；点击后调用 `/api/agent/approve`，成功后更新原卡片并禁用按钮。任务最终结果以卡片发回，失败时回退为纯文本。
 
-生产环境保持 `--auto-approve=false`。飞书只是输入入口，工具 allowlist、风险等级、超时、输出预算和最终权限判断都在 Paper Agent Runtime 内完成。长输出会为飞书截断，完整历史仍保存在本地 Session SQLite 中。
+生产环境保持 `--auto-approve=false`。飞书只是输入入口，工具 allowlist、风险等级、超时、输出预算和最终权限判断都在 Your Agent Runtime 内完成。长输出会为飞书截断，完整历史仍保存在本地 Session SQLite 中。

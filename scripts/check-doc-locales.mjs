@@ -19,7 +19,8 @@ const pairs = [
   ["docs/i18n.md", "docs/i18n.zh-CN.md"],
   ["docs/paper-reading-template.md", "docs/paper-reading-template.zh-CN.md"],
   ["docs/roadmap.md", "docs/roadmap.zh-CN.md"],
-  ["examples/paper-agent/README.md", "examples/paper-agent/README.zh-CN.md"]
+  ["examples/your-agent/README.md", "examples/your-agent/README.zh-CN.md"],
+  ["skills/paper-research/SKILL.md", "skills/paper-research/SKILL.zh-CN.md"]
 ];
 
 const inlineBilingual = new Set([".github/pull_request_template.md"]);

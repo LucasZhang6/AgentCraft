@@ -15,10 +15,10 @@ if rg -n --pcre2 'uses:\s+[^\s]+@(?![0-9a-f]{40}(?:\s|$))[^\s#]+' .github/workfl
   echo "GitHub Actions must be pinned to full commit SHAs" >&2
   exit 1
 fi
-unformatted="$(gofmt -l examples/paper-agent)"
+unformatted="$(gofmt -l examples/your-agent)"
 test -z "$unformatted" || { echo "gofmt required:" >&2; echo "$unformatted" >&2; exit 1; }
-GOCACHE="$ROOT/.gocache" go vet ./examples/paper-agent/...
-GOCACHE="$ROOT/.gocache" go test ./examples/paper-agent/...
+GOCACHE="$ROOT/.gocache" go vet ./examples/your-agent/...
+GOCACHE="$ROOT/.gocache" go test ./examples/your-agent/...
 npm run docs:locales
 npm --prefix ai-agent-roadmap-site test
 echo "Open-source checks passed"
