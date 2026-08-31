@@ -13,6 +13,6 @@
     "postinstall": "node scripts/sync-pdfjs.mjs"
   },
   "dependencies": {
-    "pdfjs-dist": "5.1.91"
+    "pdfjs-dist": "6.2.108"
   }
 }
